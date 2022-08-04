@@ -1,5 +1,5 @@
 {
-  "name": "outl1ne/nova-menu-builder",
+  "name": "frederiksimon/nova-menu-builder",
   "description": "This Laravel Nova package allows you to create and manage menus and menu items.",
   "keywords": [
     "laravel",
@@ -24,6 +24,11 @@
       "name": "Optimist Digital",
       "email": "info@optimistdigital.com",
       "role": "Maintainer"
+    },
+    {
+      "name": "Frederik Simon",
+      "email": "fre.drk.simon@gmail.com",
+      "role": "Developer"
     }
   ],
   "require": {
