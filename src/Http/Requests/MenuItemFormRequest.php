@@ -69,7 +69,8 @@ class MenuItemFormRequest extends FormRequest
 
         foreach ($fieldRules as $key => $rule) {
             if ($menuItem) $rule = Str::replace('{resourceId}', $menuItem->id, $rule);
-            $dataRules[$key] = $rule;
+
+            if(!empty($rule)) $dataRules[$key] = $rule;
         }
 
         return array_merge([

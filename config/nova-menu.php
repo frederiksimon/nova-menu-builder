@@ -14,8 +14,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'menus_table_name' => 'nova_menu_menus',
-    'menu_items_table_name' => 'nova_menu_menu_items',
+    'menus_table_name' => 'menus',
+    'menu_items_table_name' => 'menu_items',
 
 
     /*
@@ -28,7 +28,10 @@ return [
     |
     */
 
-    'locales' => ['en_US' => 'English'],
+    'locales' => [
+        'en' => 'English',
+        'sk' => 'Slovensky'
+    ],
 
 
     /*
@@ -44,13 +47,20 @@ return [
     |
     */
 
+
     'menus' => [
-        // 'header' => [
-        //     'name' => 'Header',
-        //     'unique' => true,
-        //     'max_depth' => 10,
-        //     'menu_item_types' => []
-        // ]
+        'main-menu' => [
+            'name' => 'Main menu',
+            'unique' => true,
+            'max_depth' => 10,
+            'menu_item_types' => []
+        ],
+        'footer' => [
+            'name' => 'Footer',
+            'unique' => true,
+            'max_depth' => 10,
+            'menu_item_types' => []
+        ]
     ],
 
     /*
@@ -65,6 +75,8 @@ return [
     'menu_item_types' => [
         \Outl1ne\MenuBuilder\MenuItemTypes\MenuItemTextType::class,
         \Outl1ne\MenuBuilder\MenuItemTypes\MenuItemStaticURLType::class,
+        \Outl1ne\MenuBuilder\MenuItemTypes\PageMenuItemType::class,
+        \Outl1ne\MenuBuilder\MenuItemTypes\RouteMenuItemType::class,
     ],
 
     /*
@@ -109,7 +121,7 @@ return [
     |
     */
 
-    'menu_item_model' => Outl1ne\MenuBuilder\Models\MenuItem::class,
+    'menu_item_model' => \Q7digitalmedia\NovaQuisBase\Models\QuisMenuItem::class,
 
 
     /*
@@ -122,6 +134,4 @@ return [
     */
 
     'auto_load_migrations' => true,
-
-
 ];

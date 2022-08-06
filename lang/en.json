@@ -40,5 +40,7 @@
   "novaMenuBuilder.menuTypeRequired": "Menu type is required.",
   "novaMenuBuilder.copyMenuItemsFromTitle": "Copy menu items from",
   "novaMenuBuilder.copyMenuItemsButtonTitle": "Copy items",
-  "novaMenuBuilder.locale": "Locale"
+  "novaMenuBuilder.locale": "Locale",
+  "novaMenuBuilder.page": "Page",
+  "novaMenuBuilder.route": "Route"
 }

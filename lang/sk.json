@@ -42,5 +42,7 @@
   "novaMenuBuilder.copyMenuItemsFromTitle": "Kopírovať položky menu z",
   "novaMenuBuilder.copyMenuItemsButtonTitle": "Kopírovať položky",
   "novaMenuBuilder.locale": "Lokalizácia",
+  "novaMenuBuilder.page": "Stránka",
+  "novaMenuBuilder.route": "Cesta (route)",
   "Open in": "Otvoriť v"
 }

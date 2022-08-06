@@ -30,7 +30,8 @@
     "php": ">=8.0",
     "doctrine/dbal": ">=2.0.0",
     "laravel/nova": "^4.0",
-    "outl1ne/nova-translations-loader": "^5.0.0"
+    "outl1ne/nova-translations-loader": "^5.0.0",
+    "q7digitalmedia/nova-quis-base": "*"
   },
   "require-dev": {
     "orchestra/testbench": "^7.0",
@@ -60,5 +61,11 @@
     "sort-packages": true
   },
   "minimum-stability": "dev",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "resources": {
+    "nova-quis-base": {
+      "type": "vcs",
+      "url":  "git@bitbucket.org:q7digitalmedia/nova-quis-base.git"
+    }
+  }
 }
