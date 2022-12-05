@@ -276,12 +276,37 @@ export default {
 
   methods: {
     storeWithData(eventType) {
-      this.fields.forEach(field => {
+      this.fields.forEach(async field => {
         const formData = new FormData();
-        field.fill(formData);
 
+        field.fill(formData);
         const values = Array.from(formData.values());
 
+        if (field.component === 'advanced-media-library-field' || field.component === 'file-library-field') {
+
+          if (values[0] instanceof File) {
+            let fileString = await new Promise(resolve => {
+              let reader = new FileReader()
+              reader.readAsDataURL(values[0])
+              reader.onload = function() {
+                resolve(reader.result)
+              }
+            })
+
+            this.newItem[field.attribute] = {
+              src: fileString,
+              file: values[0],
+              name: values[0].name
+            };
+
+            return;
+          }
+          else {
+            this.newItem[field.attribute] = values[0] ?? null
+            return;
+          }
+
+        }
         if (field.component === 'trix-field') {
           this.newItem[field.attribute] = values[0];
           return;
@@ -298,7 +323,17 @@ export default {
         }
       });
 
-      this.$emit(eventType);
+      setTimeout(() => this.$emit(eventType), 1000);
+    },
+
+    fileToBase64(fileObject) {
+      return new Promise(resolve => {
+        let reader = new FileReader()
+        reader.readAsDataURL(fileObject)
+        reader.onload = function() {
+          resolve(reader.result)
+        }
+      })
     },
 
     getError(key) {

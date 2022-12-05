@@ -51,7 +51,7 @@ class MenuBuilder extends Tool
         $templateFields = [];
 
         $handleField = function (&$field) {
-            if (!empty($field->attribute) && ($field->attribute !== 'ComputedField')) {
+            if (!empty($field->attribute) && ($field->attribute !== 'ComputedField') && ($field->attribute !== 'category_image')) {
                 if (empty($field->panel)) {
                     $field->attribute = 'data->' . $field->attribute;
                 } else {

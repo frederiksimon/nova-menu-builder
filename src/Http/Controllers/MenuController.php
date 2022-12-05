@@ -165,10 +165,22 @@ class MenuController extends Controller
 
         $menuItem->data = [];
         foreach ($data as $key => $value) {
-            $menuItem->{$key} = $value;
+            if ($key != 'category_image') {
+                $menuItem->{$key} = $value;
+            }
+        }
+
+        if (is_array($data['category_image'])) {
+            $uploadedCategoryImage = nova_menu_builder_create_file_object_from_base64($data['category_image']['src'], $data['category_image']['name']);
+            $menuItem->addMedia($uploadedCategoryImage)->toMediaCollection('category_image');
+        }
+
+        if ($data['category_image'] === null) {
+            $menuItem->clearMediaCollection('category_image');
         }
 
         $menuItem->save();
+
         return response()->json(['success' => true], 200);
     }
 
