@@ -126,9 +126,13 @@ class MenuController extends Controller
         $data['order'] = $menuItemModel::max('id') + 1;
 
         $model = new $menuItemModel;
+
         foreach ($data as $key => $value) {
-            $model->{$key} = $value;
+            if($key != 'category_image') {
+                $model->{$key} = $value;
+            }
         }
+
         $model->save();
 
         return response()->json(['success' => true], 200);
