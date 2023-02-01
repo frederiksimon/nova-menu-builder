@@ -43,11 +43,17 @@ class MenuItemFormRequest extends FormRequest
     public function getValues()
     {
         $keys = ['name', 'enabled', 'nestable', 'target', 'class', 'value', 'menu_id', 'locale', 'category_image'];
+
+        $values = [];
+
         foreach ($this->all() as $key => $value) {
-            if (Str::startsWith($key, 'data->')) $keys[] = $key;
+            if ($key == 'data->ckdescription') {
+              $values['data->ckdescription'] = $value['0'];
+            }
+            elseif (Str::startsWith($key, 'data->')) $keys[] = $key;
         }
 
-        return $this->only($keys);
+        return array_merge($this->only($keys), $values);
     }
 
     private function getRulesFromMenuLinkable(string $menuLinkableClass, $menuItem = null)
