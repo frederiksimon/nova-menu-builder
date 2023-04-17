@@ -42,5 +42,6 @@
   "novaMenuBuilder.copyMenuItemsButtonTitle": "Copy items",
   "novaMenuBuilder.locale": "Locale",
   "novaMenuBuilder.page": "Page",
-  "novaMenuBuilder.route": "Route"
+  "novaMenuBuilder.route": "Route",
+  "novaMenuBuilder.staticUrl": "Static URL"
 }
