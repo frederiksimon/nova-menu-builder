@@ -24,7 +24,6 @@ class MenuItemStaticURLType extends BaseMenuItemType
     {
         return [
             'static_url' => 'required',
-            'name' => 'required',
         ];
     }
     public static function getFields(): array
