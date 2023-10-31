@@ -174,12 +174,12 @@ class MenuController extends Controller
             }
         }
 
-        if (is_array($data['category_image'])) {
+        if (array_key_exists('category_image', $data) && is_array($data['category_image'])) {
             $uploadedCategoryImage = nova_menu_builder_create_file_object_from_base64($data['category_image']['src'], $data['category_image']['name']);
             $menuItem->addMedia($uploadedCategoryImage)->toMediaCollection('category_image');
         }
 
-        if ($data['category_image'] === null) {
+        if (array_key_exists('category_image', $data) && $data['category_image'] === null) {
             $menuItem->clearMediaCollection('category_image');
         }
 
