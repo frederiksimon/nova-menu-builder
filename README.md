@@ -52,6 +52,11 @@ public function tools()
     return [
         // ...
         \Outl1ne\MenuBuilder\MenuBuilder::make(),
+
+        // Optional customization
+        ->title('Menus') // Define a new name for sidebar
+        ->icon('adjustments') // Customize menu icon, supports heroicons
+        ->hideMenu(false) // Hide MenuBuilder defined MenuSection.
     ];
 }
 ```
@@ -208,6 +213,19 @@ public static function getDisplayValue($value, ?array $data, $locale) {
 }
 
 /**
+ * Get the enabled value
+ *
+ * @param $value
+ * @param $data The data from item fields.
+ * @param $locale
+ * @return string
+*/
+public static function getEnabledValue($value, ?array $data, $locale)
+{
+  return true;
+}
+
+/**
  * Get the value of the link visible to the front-end.
  *
  * Can be anything. It is up to you how you will handle parsing it.
@@ -277,9 +295,16 @@ public function getMenus(Request $request) {
 }
 ```
 
-#### nova_get_menu_by_slug(\$menuSlug, \$locale = null)
+#### Get single menu via identifier
 
-To get a single menu, you can use the helper function `nova_get_menu_by_slug('slug', 'en')`. Returns null if no menu with the slug is found or returns the menu if it is found. If no locale is passed, the helper will automatically choose the first configured locale.
+```php
+// Available helpers
+nova_get_menu_by_slug($menuSlug, $locale = null)
+nova_get_menu_by_id($menuId, $locale = null)
+```
+
+To get a single menu, you can use the available helper functions.<br />
+Returns null if no menu with the identifier is found or returns the menu if it is found. If no locale is passed, the helper will automatically choose the first configured locale.
 
 ## Credits
 

@@ -5,6 +5,9 @@
     <form @submit.prevent="copyMenuItems" autocomplete="off">
       <DefaultField
         :field="{
+          fullWidth: true,
+          stacked: true,
+          withLabel: true,
           visible: true,
           name: __('novaMenuBuilder.menuResourceSingularLabel'),
         }"
@@ -22,6 +25,9 @@
 
       <DefaultField
         :field="{
+          fullWidth: true,
+          stacked: true,
+          withLabel: true,
           visible: true,
           name: __('novaMenuBuilder.locale'),
         }"
@@ -94,7 +100,7 @@ export default {
 
   methods: {
     async fetchMenuOptions() {
-      let menuOptions = (await api.getMenus()).data;
+      let menuOptions = (await api.getMenus({ notEmpty: true })).data;
 
       if (this.hasMultipleLocales) {
         this.selectedMenu = String(this.resourceId);

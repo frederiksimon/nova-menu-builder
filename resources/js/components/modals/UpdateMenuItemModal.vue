@@ -1,9 +1,5 @@
 <template>
-  <Modal
-    :show="showModal"
-    class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
-    align="flex justify-end"
-  >
+  <Modal :show="showModal" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg" align="flex justify-end">
     <ModalHeader class="flex flex-wrap justify-between">
       {{ __(update ? 'novaMenuBuilder.updateModalTitle' : 'novaMenuBuilder.createModalTitle') }}
 
@@ -12,20 +8,21 @@
         :checked="newItem.nestable"
         @input="newItem.nestable = $event.target.checked"
       >
-        {{ __('novaMenuBuilder.nestableLabel') }}
+        <span class="ml-1">{{ __('novaMenuBuilder.nestableLabel') }}</span>
       </CheckboxWithLabel>
 
       <CheckboxWithLabel :checked="newItem.enabled" @input="newItem.enabled = $event.target.checked">
-        {{ newItem.enabled ? this.toggleLabels.checked : this.toggleLabels.unchecked }}
+        <span class="ml-1">{{ newItem.enabled ? this.toggleLabels.checked : this.toggleLabels.unchecked }}</span>
       </CheckboxWithLabel>
     </ModalHeader>
-    <div>
+
+    <div class="o1-pt-2 o1-pb-6">
       <form @submit.prevent="$emit(update ? 'updateItem' : 'confirmItemCreate')" autocomplete="off">
         <DefaultField
           :errors="wrappedErrors"
+          :fullWidthContent="true"
           :field="{
-            visible: true,
-            stacked: true,
+            ...defaultFieldProps,
             validationKey: 'name',
             name: __('novaMenuBuilder.menuItemName'),
           }"
@@ -44,9 +41,9 @@
 
         <DefaultField
           :errors="wrappedErrors"
+          :fullWidthContent="true"
           :field="{
-            visible: true,
-            stacked: true,
+            ...defaultFieldProps,
             validationKey: 'class',
             name: __('novaMenuBuilder.menuItemType'),
           }"
@@ -67,9 +64,9 @@
         <DefaultField
           v-if="linkType.type === 'static-url'"
           :errors="wrappedErrors"
+          :fullWidthContent="true"
           :field="{
-            visible: true,
-            stacked: true,
+            ...defaultFieldProps,
             validationKey: 'value',
             name: __('novaMenuBuilder.menuItemUrlFieldName'),
           }"
@@ -77,7 +74,7 @@
           <template #field>
             <input
               :placeholder="__('novaMenuBuilder.menuItemUrlFieldName')"
-              :class="{ 'o1-border-red-400': hasError('value') }"
+              :class="{ 'o1-border-red-400': getError('value') }"
               class="w-full form-control form-input form-input-bordered"
               id="url"
               type="text"
@@ -88,21 +85,25 @@
 
         <DefaultField
           v-if="linkType.type === 'select'"
-          class="option-select-field"
+          class="option-select-field o1-menu-builder-multiselect-wrapper"
           :errors="wrappedErrors"
+          :fullWidthContent="true"
           :field="{
-            visible: true,
-            stacked: true,
+            ...defaultFieldProps,
             validationKey: 'value',
             name: __('novaMenuBuilder.menuItemValue'),
           }"
         >
           <template #field>
             <multiselect
+              ref="multiselect"
               :options="options"
               :placeholder="__('novaMenuBuilder.chooseOption')"
               :value="selectedOption"
-              @input="value => $emit('onLinkModelUpdate', value ? value.id : void 0)"
+              @input="handleChange"
+              @close="handleClose"
+              @remove="handleRemove"
+              @open="handleOpen"
               label="label"
               track-by="id"
               selectLabel=""
@@ -128,9 +129,9 @@
 
         <DefaultField
           v-if="linkType.type && linkType.type !== 'text'"
+          :fullWidthContent="true"
           :field="{
-            visible: true,
-            stacked: true,
+            ...defaultFieldProps,
             name: __('Open in'),
           }"
         >
@@ -163,6 +164,7 @@
             :errors="wrappedErrors"
             :show-errors="true"
             class="menu-item-component"
+            :fullWidthContent="true"
           />
         </template>
       </form>
@@ -213,6 +215,12 @@ export default {
 
   data: () => ({
     toggleLabels: false,
+    defaultFieldProps: {
+      fullWidth: true,
+      stacked: true,
+      withLabel: true,
+      visible: true,
+    },
   }),
 
   components: { Multiselect },
@@ -220,6 +228,16 @@ export default {
   watch: {
     'newItem.name'(newName) {
       this.emitFieldValueChange('name', newName);
+    },
+
+    showModal(show) {
+      this.$nextTick(() => {
+        const scrollWrap = document.querySelector('.modal.fixed');
+        if (scrollWrap) {
+          if (show) scrollWrap.addEventListener('scroll', this.repositionDropdown);
+          else scrollWrap.removeEventListener('scroll', this.repositionDropdown);
+        }
+      });
     },
   },
 
@@ -254,6 +272,8 @@ export default {
 
       fields.forEach(f => {
         f.stacked = true;
+        f.fullWidth = true;
+        f.withLabel = true;
       });
 
       return fields || [];
@@ -275,6 +295,21 @@ export default {
   },
 
   methods: {
+    handleChange(value) {
+      this.$emit('onLinkModelUpdate', value ? value.id : void 0);
+      this.$nextTick(this.repositionDropdown);
+    },
+
+    handleOpen() {
+      this.$nextTick(this.repositionDropdown);
+    },
+
+    handleClose() {},
+
+    handleRemove() {
+      this.$nextTick(this.repositionDropdown);
+    },
+
     storeWithData(eventType) {
       this.fields.forEach(async field => {
         const formData = new FormData();
@@ -336,6 +371,29 @@ export default {
       })
     },
 
+    repositionDropdown(onOpen = false) {
+      const ms = this.$refs.multiselect;
+      if (!ms) return;
+
+      const el = ms.$el;
+
+      const handlePositioning = () => {
+        if (onOpen) ms.$refs.list.scrollTop = 0;
+
+        const { y, height } = el.getBoundingClientRect();
+
+        const top = y + height;
+
+        ms.$refs.list.style.position = 'fixed';
+        ms.$refs.list.style.width = `${el.clientWidth}px`;
+        ms.$refs.list.style.top = `${top}px`;
+        ms.$refs.list.style['border-radius'] = '0 0 5px 5px';
+      };
+
+      if (onOpen) this.$nextTick(handlePositioning);
+      else handlePositioning();
+    },
+
     getError(key) {
       return this.wrappedErrors.has(key);
     },
@@ -352,6 +410,21 @@ export default {
 </script>
 
 <style lang="scss">
+$white: #fff;
+$slate50: #f8fafc;
+$slate100: #f1f5f9;
+$slate200: #e2e8f0;
+$slate300: #cbd5e1;
+$slate400: #94a3b8;
+$slate500: #64748b;
+$slate600: #475569;
+$slate700: #334155;
+$slate800: #1e293b;
+$slate900: #0f172a;
+
+$red400: #f87171;
+$red500: #ef4444;
+
 .add-new-menu-item-modal {
   .menu-item-component {
     div.py-6.px-8 {
@@ -368,48 +441,75 @@ export default {
 }
 
 /* Multiselect styles */
-.option-select-field {
+.o1-menu-builder-multiselect-wrapper {
+  .multiselect {
+    min-height: 36px;
+    border: none;
+    border-radius: 0;
+    background: none;
+  }
+
   .multiselect__tags {
     --tw-border-opacity: 1;
     border-width: 1px;
-    border-color: rgba(var(--colors-gray-300), var(--tw-border-opacity));
-    background-color: rgba(var(--colors-white), var(--tw-bg-opacity));
-    color: rgba(var(--colors-gray-600), var(--tw-text-opacity));
+
+    border-color: $slate300;
+    background-color: $white;
+    color: $slate600;
+
+    padding: 6px 56px 0 6px;
+    min-height: 36px;
+
+    border-radius: 4px;
+    overflow: hidden;
 
     .dark & {
-      border-color: rgba(var(--colors-gray-700), var(--tw-border-opacity));
-      background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
-      color: rgba(var(--colors-gray-400), var(--tw-text-opacity));
+      border-color: $slate700;
+      background-color: $slate900;
+      color: $slate400;
     }
   }
+
   .multiselect__input {
     border: none;
-    background-color: rgba(var(--colors-white), var(--tw-bg-opacity));
-    color: rgba(var(--colors-gray-600), var(--tw-text-opacity));
+    border-color: rgba(var(--colors-gray-100), var(--tw-border-opacity));
+    background-color: $white;
+    color: rgba(var(--colors-gray-400));
+
+    font-size: 14px;
+    line-height: 14px;
+
+    padding-left: 8px;
 
     .dark & {
-      background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
-      color: rgba(var(--colors-gray-400), var(--tw-text-opacity));
+      background-color: $slate900;
+      color: $slate400;
     }
   }
+
   .multiselect__tag {
     background-color: rgba(var(--colors-primary-500));
-    color: rgba(var(--colors-white), var(--tw-text-opacity));
-    --tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    font-weight: 700;
+    color: $white;
+    font-weight: 600;
+
+    padding: 4px 24px 4px 8px;
+    margin: 1px 8px 1px 0;
 
     .multiselect__tag-icon {
       &::after {
-        color: rgba(var(--colors-white));
+        color: $white;
       }
+
       &:hover {
-        background: rgba(var(--colors-primary-400));
+        background: rgba(var(--colors-primary-500));
+
         &::after {
-          color: rgba(var(--colors-red-500));
+          color: $red500;
         }
       }
     }
   }
+
   .multiselect > .multiselect__clear {
     &::before,
     &::after {
@@ -424,81 +524,114 @@ export default {
       }
     }
   }
+
   .multiselect__single {
-    background-color: rgba(var(--colors-white), var(--tw-bg-opacity));
-    color: rgba(var(--colors-gray-600), var(--tw-text-opacity));
+    background-color: $white;
+    color: $slate600;
+
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 700;
+    min-height: 18px;
+
+    padding-top: 2px;
+    padding-left: 8px;
+
+    color: $slate600;
 
     .dark & {
-      background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
-      color: rgba(var(--colors-gray-400), var(--tw-text-opacity));
+      color: rgba(var(--colors-gray-400));
+      background-color: $slate900;
     }
   }
+
   .multiselect__spinner {
-    background-color: rgba(var(--colors-white), var(--tw-bg-opacity));
-    color: rgba(var(--colors-gray-600), var(--tw-text-opacity));
+    background-color: $white;
+    color: $slate600;
 
     .dark & {
-      background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
-      color: rgba(var(--colors-gray-400), var(--tw-text-opacity));
+      background-color: $slate900;
+      color: $slate400;
     }
+
     &:before,
     &:after {
       border-color: rgba(var(--colors-primary-500)) transparent transparent;
     }
   }
+
   .multiselect__content-wrapper {
-    border-color: rgba(var(--colors-gray-300), var(--tw-border-opacity));
+    border-color: $slate300;
+    transition: none;
+    height: 100%;
+
+    .multiselect__content {
+      overflow: hidden;
+      width: 100%;
+    }
 
     .dark & {
-      border-color: rgba(var(--colors-gray-700), var(--tw-border-opacity));
+      border-color: $slate700;
+      background-color: $slate900;
     }
 
     li > span.multiselect__option {
       background-color: #fff;
-      color: rgba(var(--colors-gray-400));
+      color: $slate400;
+
+      min-height: 32px;
+      font-size: 14px;
+      line-height: 14px;
 
       .dark & {
-        background-color: rgba(var(--colors-gray-900));
+        background-color: $slate900;
       }
     }
+
     .multiselect__element {
-      background-color: rgba(var(--colors-white), var(--tw-bg-opacity));
-      color: rgba(var(--colors-gray-600), var(--tw-text-opacity));
+      background-color: $white;
+      color: $slate600;
 
       .dark & {
-        background-color: rgba(var(--colors-gray-900), var(--tw-bg-opacity));
-        color: rgba(var(--colors-gray-400), var(--tw-text-opacity));
+        background-color: $slate900;
+        color: $slate400;
       }
 
       .multiselect__option {
-        color: rgba(var(--colors-gray-600));
+        color: $slate600;
+
+        padding: 8px 12px;
+        min-height: 32px;
+        font-size: 14px;
+        line-height: 14px;
 
         .dark & {
-          color: rgba(var(--colors-gray-400));
+          color: $slate400;
         }
 
         &.multiselect__option--selected {
-          color: rgba(var(--colors-primary-400));
-          background-color: rgba(var(--colors-white));
+          color: rgba(var(--colors-primary-500));
+          background-color: $white;
 
           .dark & {
-            background-color: rgba(var(--colors-gray-900));
+            background-color: $slate900;
           }
         }
+
         &.multiselect__option--highlight {
           background-color: rgba(var(--colors-primary-500));
-          color: rgba(var(--colors-white));
+          color: $white;
 
           &::after {
             background-color: rgba(var(--colors-primary-500));
-            font-weight: 700;
+            font-weight: 600;
           }
 
           &.multiselect__option--selected {
-            background-color: rgba(var(--colors-red-500));
+            background-color: $red400;
 
             .dark & {
-              background-color: rgba(var(--colors-red-500));
+              background-color: $red400;
             }
           }
         }
@@ -513,7 +646,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 5px;
-    font-weight: 700;
+    font-weight: 600;
     transition: all 0.2s ease-in-out;
 
     &:hover {
@@ -522,11 +655,31 @@ export default {
     }
   }
 
+  .multiselect__select {
+    height: 36px;
+  }
+
+  .multiselect__placeholder {
+    margin-bottom: 8px;
+    padding-top: 0px;
+    padding-left: 8px;
+    min-height: 16px;
+    line-height: 16px;
+    cursor: default;
+
+    color: #475569;
+
+    .dark & {
+      color: #64748b;
+    }
+  }
+
   .multiselect__clear {
     position: absolute;
-    right: 41px;
-    height: 40px;
-    width: 40px;
+    right: 36px;
+    top: 8px;
+    height: 20px;
+    width: 20px;
     display: block;
     cursor: pointer;
     z-index: 2;
@@ -539,8 +692,11 @@ export default {
       width: 3px;
       height: 16px;
       background: #aaa;
-      top: 12px;
-      right: 4px;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      margin: auto;
     }
 
     &::before {
