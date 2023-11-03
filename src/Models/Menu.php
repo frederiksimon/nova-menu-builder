@@ -21,7 +21,7 @@ class Menu extends Model
             ->hasMany(MenuBuilder::getMenuItemClass())
             ->where('parent_id', null)
             ->orderBy('parent_id')
-            ->orderBy('order')
+            ->orderBy('sort_order')
             ->orderBy('name');
     }
 

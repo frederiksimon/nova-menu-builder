@@ -57,6 +57,7 @@ class MenuController extends Controller
                 $newMenuItem->menu_id = $toMenuId;
                 $newMenuItem->parent_id = $parentId;
                 $newMenuItem->order = $maxOrder + $i++;
+                $newMenuItem->sort_order = $maxOrder + $i++;
                 $newMenuItem->save();
 
                 if ($menuItem->children->count() > 0) {
@@ -130,6 +131,7 @@ class MenuController extends Controller
 
         $data = $request->getValues();
         $data['order'] = $menuItemModel::max('id') + 1;
+        $data['sort_order'] = $menuItemModel::max('id') + 1;
 
         $model = new $menuItemModel;
 
@@ -298,6 +300,7 @@ class MenuController extends Controller
         // Do individual updates to trigger observer(s)
         foreach ($menuItems as $menuItem) {
             $menuItem->order = $menuItem->order + 1;
+            $menuItem->sort_order = $menuItem->sort_order + 1;
             $menuItem->save();
         }
     }
@@ -315,6 +318,7 @@ class MenuController extends Controller
     {
         $menuItem = MenuBuilder::getMenuItemClass()::find($menuItemData['id']);
         $menuItem->order = $orderNr;
+        $menuItem->sort_order = $orderNr;
         $menuItem->parent_id = $parentId;
         $menuItem->save();
         $this->recursivelyOrderChildren($menuItemData);
@@ -326,6 +330,7 @@ class MenuController extends Controller
         unset($data['id']);
         if ($parentId !== null) $data['parent_id'] = $parentId;
         if ($order !== null) $data['order'] = $order;
+        if ($order !== null) $data['sort_order'] = $order;
         $data['locale'] = $menuItem->locale;
 
         // Save the long way instead of ::create() to trigger observer(s)
