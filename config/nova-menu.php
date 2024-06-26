@@ -52,15 +52,21 @@ return [
         'main-menu' => [
             'name' => 'Main menu',
             'unique' => true,
-            'max_depth' => 10,
+            'max_depth' => 2,
             'menu_item_types' => []
         ],
         'footer' => [
             'name' => 'Footer',
             'unique' => true,
-            'max_depth' => 10,
+            'max_depth' => 1,
             'menu_item_types' => []
-        ]
+        ],
+        'eshop-category-menu' => [
+            'name' => 'Eshop category menu',
+            'unique' => true,
+            'max_depth' => 4,
+            'menu_item_types' => []
+        ],
     ],
 
     /*
