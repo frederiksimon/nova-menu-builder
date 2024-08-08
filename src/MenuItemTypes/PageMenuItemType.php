@@ -41,7 +41,7 @@ class PageMenuItemType extends MenuItemSelectType
      * @return array
      **/
     public static function getOptions($locale): array {
-        return Page::all()->pluck('name', 'url->' . $locale)->toArray();
+        return config('nova-quis-base.base_page_model')::all()->pluck('name', 'url->' . $locale)->toArray();
     }
 
     /**
@@ -73,7 +73,7 @@ class PageMenuItemType extends MenuItemSelectType
     public static function getValue($value, ?array $data, $locale)
     {
         if ($data['page']) {
-            $page = Page::where('id', $data['page'])
+            $page = config('nova-quis-base.base_page_model')::where('id', $data['page'])
                 ->first();
 
             $value = $page->getTranslation('url', $locale);
@@ -93,7 +93,7 @@ class PageMenuItemType extends MenuItemSelectType
             Select::make(__('novaMenuBuilder.page'), 'page')
                 ->sortable()
                 ->rules('required', 'max:255')
-                ->options(Page::all()->pluck('name', 'id')->toArray())
+                ->options(config('nova-quis-base.base_page_model')::all()->pluck('name', 'id')->toArray())
         ];
     }
 

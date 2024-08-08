@@ -43,7 +43,7 @@ class Menu extends Model
 
     public function formatMenuItem($menuItem)
     {
-        return [
+        $return = [
             'id' => $menuItem->id,
             'name' => $menuItem->name,
             'type' => $menuItem->type,
@@ -55,5 +55,15 @@ class Menu extends Model
                 return $this->formatMenuItem($item);
             })
         ];
+
+        if ($menuItem->type == 'page') {
+            $page = config('nova-quis-base.base_page_model')::query()
+                ->where('id', $menuItem->customData['page'])
+                ->first();
+
+            $return['page'] = $page;
+        }
+
+        return $return;
     }
 }
