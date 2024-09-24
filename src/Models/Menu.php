@@ -2,11 +2,15 @@
 
 namespace Outl1ne\MenuBuilder\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Outl1ne\MenuBuilder\MenuBuilder;
+use Q7digitalmedia\NovaQuisEshop\Factories\MenuFactory;
 
 class Menu extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['name', 'slug'];
 
     public function __construct(array $attributes = [])
@@ -65,5 +69,13 @@ class Menu extends Model
         }
 
         return $return;
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): MenuFactory
+    {
+        return MenuFactory::new();
     }
 }
