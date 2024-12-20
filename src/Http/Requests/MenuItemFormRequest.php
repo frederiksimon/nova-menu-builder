@@ -42,7 +42,7 @@ class MenuItemFormRequest extends FormRequest
 
     public function getValues()
     {
-        $keys = ['name', 'enabled', 'nestable', 'target', 'class', 'value', 'menu_id', 'locale', 'category_image'];
+        $keys = ['name', 'enabled', 'nestable', 'target', 'class', 'value', 'menu_id', 'locale', 'category_image', 'category_nav_image'];
 
         $values = [];
 

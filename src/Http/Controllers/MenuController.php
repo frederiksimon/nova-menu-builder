@@ -136,7 +136,7 @@ class MenuController extends Controller
         $model = new $menuItemModel;
 
         foreach ($data as $key => $value) {
-            if($key != 'category_image') {
+            if($key != 'category_image' && $key != 'category_nav_image') {
                 $model->{$key} = $value;
             }
         }
@@ -177,7 +177,7 @@ class MenuController extends Controller
 
         $menuItem->data = [];
         foreach ($data as $key => $value) {
-            if ($key != 'category_image') {
+            if ($key != 'category_image' && $key != 'category_nav_image') {
                 $menuItem->{$key} = $value;
             }
         }
@@ -189,6 +189,15 @@ class MenuController extends Controller
 
         if (array_key_exists('category_image', $data) && $data['category_image'] === null) {
             $menuItem->clearMediaCollection('category_image');
+        }
+
+        if (array_key_exists('category_nav_image', $data) && is_array($data['category_nav_image'])) {
+            $uploadedCategoryImage = nova_menu_builder_create_file_object_from_base64($data['category_nav_image']['src'], $data['category_nav_image']['name']);
+            $menuItem->addMedia($uploadedCategoryImage)->toMediaCollection('category_nav_image');
+        }
+
+        if (array_key_exists('category_nav_image', $data) && $data['category_nav_image'] === null) {
+            $menuItem->clearMediaCollection('category_nav_image');
         }
 
         $menuItem->save();
