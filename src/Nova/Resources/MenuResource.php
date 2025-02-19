@@ -87,4 +87,14 @@ class MenuResource extends Resource
     {
         return false;
     }
+
+    public static function createButtonLabel()
+    {
+        return __('novaMenuBuilder.createMenu');
+    }
+
+    public static function updateButtonLabel()
+    {
+        return __('novaMenuBuilder.updateMenu');
+    }
 }

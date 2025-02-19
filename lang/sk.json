@@ -45,5 +45,7 @@
   "novaMenuBuilder.page": "Stránka",
   "novaMenuBuilder.route": "Cesta (route)",
   "Open in": "Otvoriť v",
-  "novaMenuBuilder.staticUrl": "Statická URL"
+  "novaMenuBuilder.staticUrl": "Statická URL",
+  "novaMenuBuilder.createMenu": "Vytvoriť menu",
+  "novaMenuBuilder.updateMenu": "Aktualizovať menu"
 }

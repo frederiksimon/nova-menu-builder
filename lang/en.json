@@ -43,5 +43,7 @@
   "novaMenuBuilder.locale": "Locale",
   "novaMenuBuilder.page": "Page",
   "novaMenuBuilder.route": "Route",
-  "novaMenuBuilder.staticUrl": "Static URL"
+  "novaMenuBuilder.staticUrl": "Static URL",
+  "novaMenuBuilder.createMenu": "Create menu",
+  "novaMenuBuilder.updateMenu": "Update menu"
 }
