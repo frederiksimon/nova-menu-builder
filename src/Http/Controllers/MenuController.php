@@ -141,6 +141,24 @@ class MenuController extends Controller
             }
         }
 
+        if (array_key_exists('category_image', $data) && is_array($data['category_image'])) {
+            $uploadedCategoryImage = nova_menu_builder_create_file_object_from_base64($data['category_image']['src'], $data['category_image']['name']);
+            $model->addMedia($uploadedCategoryImage)->toMediaCollection('category_image');
+        }
+
+        if (array_key_exists('category_image', $data) && $data['category_image'] === null) {
+            $model->clearMediaCollection('category_image');
+        }
+
+        if (array_key_exists('category_nav_image', $data) && is_array($data['category_nav_image'])) {
+            $uploadedCategoryImage = nova_menu_builder_create_file_object_from_base64($data['category_nav_image']['src'], $data['category_nav_image']['name']);
+            $model->addMedia($uploadedCategoryImage)->toMediaCollection('category_nav_image');
+        }
+
+        if (array_key_exists('category_nav_image', $data) && $data['category_nav_image'] === null) {
+            $model->clearMediaCollection('category_nav_image');
+        }
+
         $model->save();
 
         return response()->json(['success' => true], 200);
