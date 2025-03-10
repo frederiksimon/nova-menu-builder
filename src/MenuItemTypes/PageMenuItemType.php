@@ -4,6 +4,7 @@ namespace Outl1ne\MenuBuilder\MenuItemTypes;
 
 use Q7digitalmedia\NovaQuisBase\Models\Page;
 use Laravel\Nova\Fields\Select;
+use Q7digitalmedia\NovaQuisBase\Nova\Fields\Multiselect;
 
 class PageMenuItemType extends MenuItemSelectType
 {
@@ -90,8 +91,9 @@ class PageMenuItemType extends MenuItemSelectType
     public static function getFields(): array
     {
         return [
-            Select::make(__('novaMenuBuilder.page'), 'page')
+            Multiselect::make(__('novaMenuBuilder.page'), 'page')
                 ->sortable()
+                ->singleSelect()
                 ->rules('required', 'max:255')
                 ->options(config('nova-quis-base.base_page_model')::all()->pluck('name', 'id')->toArray())
         ];
